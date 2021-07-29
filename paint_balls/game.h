@@ -12,8 +12,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 
 
 // Represents the current state of the game
