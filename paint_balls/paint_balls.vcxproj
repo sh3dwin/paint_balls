@@ -157,6 +157,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="PaintBalls.cpp" />
     <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>

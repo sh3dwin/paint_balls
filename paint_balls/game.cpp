@@ -1,4 +1,4 @@
-
+#pragma once
 
 /*******************************************************************
 ** This code is part of Breakout.
@@ -34,7 +34,7 @@ void Game::Init()
 
 void Game::Update(GLfloat dt)
 {
-
+    _level_renderer->draw();
 }
 
 
