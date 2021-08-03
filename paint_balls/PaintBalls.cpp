@@ -9,8 +9,11 @@
 ** option) any later version.
 ******************************************************************/
 #define GLEW_STATIC
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <glfw/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "game.h"
 #include "resource_manager.h"
@@ -24,7 +27,9 @@ const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 600;
 
-Game Breakout(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Game PaintBalls(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
 
 int main(int argc, char* argv[])
 {
@@ -34,10 +39,10 @@ int main(int argc, char* argv[])
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "PaintBalls", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
-    glfwInit();
+    glewInit();
     glGetError(); // Call it once to catch glewInit() bug, all other errors are now from our application.
 
     glfwSetKeyCallback(window, key_callback);
@@ -49,14 +54,17 @@ int main(int argc, char* argv[])
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
-    Breakout.Init();
+    PaintBalls.Init();
 
     // DeltaTime variables
     GLfloat deltaTime = 0.0f;
     GLfloat lastFrame = 0.0f;
 
     // Start Game within Menu State
-    Breakout.State = GAME_ACTIVE;
+    PaintBalls.State = GAME_ACTIVE;
+
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -68,15 +76,15 @@ int main(int argc, char* argv[])
 
         //deltaTime = 0.001f;
         // Manage user input
-        Breakout.ProcessInput(deltaTime);
+        PaintBalls.ProcessInput(deltaTime);
 
         // Update Game state
-        Breakout.Update(deltaTime);
+        PaintBalls.Update(deltaTime);
 
         // Render
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        Breakout.Render();
+        PaintBalls.Render();
 
         glfwSwapBuffers(window);
     }
@@ -96,9 +104,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            Breakout.Keys[key] = GL_TRUE;
+            PaintBalls.Keys[key] = GL_TRUE;
         else if (action == GLFW_RELEASE)
-            Breakout.Keys[key] = GL_FALSE;
+            PaintBalls.Keys[key] = GL_FALSE;
     }
 }
 

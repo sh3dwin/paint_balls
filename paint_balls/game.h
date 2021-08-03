@@ -12,8 +12,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <glfw/glfw3.h>
+
+#include "LevelRenderer.h"
 
 
 // Represents the current state of the game
@@ -34,7 +36,7 @@ public:
     GLboolean              Keys[1024];
     GLuint                 Width, Height;
     // Constructor/Destructor
-    Game(GLuint width, GLuint height);
+    Game(GLuint width, GLuint height, Camera camera);
     ~Game();
     // Initialize game state (load all shaders/textures/levels)
     void Init();
@@ -42,6 +44,9 @@ public:
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
     void Render();
+private:
+    LevelRenderer* _level_renderer;
+    Camera _camera;
 };
 
 #endif

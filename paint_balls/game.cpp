@@ -12,8 +12,8 @@
 #include "resource_manager.h"
 
 
-Game::Game(GLuint width, GLuint height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+Game::Game(GLuint width, GLuint height, Camera camera)
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), _camera(camera)
 {
 
 }
@@ -25,7 +25,11 @@ Game::~Game()
 
 void Game::Init()
 {
+    ResourceManager::LoadShader("multiple_lights.vert", "multiple_lights.frag", nullptr, "wooden_wall");
+    ResourceManager::LoadTexture("wooden_wall.jpg", GL_FALSE, "wooden_wall");
 
+
+    _level_renderer = new LevelRenderer(new unsigned int[9]{1, 1, 0, 0, 0, 0, 1, 0, 0}, 3, _camera);
 }
 
 void Game::Update(GLfloat dt)

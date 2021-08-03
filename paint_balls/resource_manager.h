@@ -15,7 +15,7 @@
 #include <map>
 #include <string>
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 #include "texture.h"
 #include "shader.h"

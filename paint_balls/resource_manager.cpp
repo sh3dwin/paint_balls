@@ -94,8 +94,7 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLch
     const GLchar* fShaderCode = fragmentCode.c_str();
     const GLchar* gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
-    Shader shader;
-    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    Shader shader(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
     return shader;
 }
 
@@ -109,12 +108,23 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
         texture.Image_Format = GL_RGBA;
     }
     // Load image
-    int width, height;
-    unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+    unsigned char* image = stbi_load(strcat((char*)"../resources/textures/", file), &width, &height, &nrChannels, 0);
+    if (image)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
     // Now generate texture
     texture.Generate(width, height, image);
     // And finally free image data
-    SOIL_free_image_data(image);
+    stbi_image_free(image);
     return texture;
 }
 
