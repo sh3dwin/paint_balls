@@ -77,9 +77,14 @@ void main()
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
     // phase 3: spot light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
+    result += vec3(0.1f, 0.1f, 0.1f) + CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
-    FragColor = vec4(result, 1.0);
+    if(result.x == 0 && result.y == 0 && result.z == 0){
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+    else{
+        FragColor = vec4(result, 1.0);
+    }
 }
 
 // calculates the color when using a directional light.

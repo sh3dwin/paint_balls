@@ -26,24 +26,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 800;
+const GLuint SCREEN_WIDTH = 1920;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 600;
+const GLuint SCREEN_HEIGHT = 1080;
 
 float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 
 // The Camera Object
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-bool firstMouse = true;
-bool hideCubes = false;
-float hide = 0.0f;
-float lastX = 640, lastY = 360;
 
 
 // Game Object
-Game PaintBalls(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
+Game PaintBalls(SCREEN_WIDTH, SCREEN_HEIGHT, Camera(glm::vec3(0.0f, 0.0f, 3.0f)));
 
 int main(int argc, char* argv[])
 {
@@ -60,11 +55,16 @@ int main(int argc, char* argv[])
     glGetError(); // Call it once to catch glewInit() bug, all other errors are now from our application.
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
 
     // OpenGL configuration
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
@@ -82,6 +82,10 @@ int main(int argc, char* argv[])
 
     while (!glfwWindowShouldClose(window))
     {
+        glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        std::cout << "CAMERA POSITION: " << PaintBalls._camera.Position.x << " " << PaintBalls._camera.Position.y << " " << PaintBalls._camera.Position.z << "\n";
         // Calculate delta time
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -96,9 +100,7 @@ int main(int argc, char* argv[])
         PaintBalls.Update(deltaTime);
 
         // Render
-        glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        PaintBalls.Render();
+        PaintBalls.Render(deltaTime);
 
         glfwSwapBuffers(window);
     }
@@ -122,24 +124,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         else if (action == GLFW_RELEASE)
             PaintBalls.Keys[key] = GL_FALSE;
     }
+    
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
+    if (PaintBalls.firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+        PaintBalls.lastX = xpos;
+        PaintBalls.lastY = ypos;
+        PaintBalls.firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float xoffset = xpos - PaintBalls.lastX;
+    float yoffset = PaintBalls.lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+    PaintBalls.lastX = xpos;
+    PaintBalls.lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    PaintBalls._camera.ProcessMouseMovement(xoffset, yoffset);
+
+    std::cout << "CAMERA: Pitch " << PaintBalls._camera.Pitch << std::endl;
+    std::cout << "CAMERA: Yaw " << PaintBalls._camera.Yaw << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

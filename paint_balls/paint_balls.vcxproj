@@ -147,11 +147,14 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="LevelRenderer.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
@@ -161,6 +164,8 @@
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="light_shader.frag" />
+    <None Include="light_shader.vert" />
     <None Include="multiple_lights.frag" />
     <None Include="multiple_lights.vert" />
   </ItemGroup>

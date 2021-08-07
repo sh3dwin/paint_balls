@@ -116,6 +116,12 @@ Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean al
     // Load image
     int width, height;
     unsigned char* image = stbi_load(file, &width, &height, nullptr, texture->Image_Format == GL_RGBA ? 4 : 3);
+    if (!image) {
+        std::cout << "ERROR::TEXTURE: Failed to load texture!" << std::endl;
+    }
+    else {
+        std::cout << "TEXTURE: " << file << " loaded successfully..." << std::endl;
+    }
     // Now generate texture
     texture->Generate(width, height, image);
     // And finally free image data

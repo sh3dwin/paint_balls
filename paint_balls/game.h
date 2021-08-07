@@ -31,6 +31,11 @@ enum GameState {
 class Game
 {
 public:
+
+    Camera _camera;
+    bool firstMouse = true;
+    float lastX = 640, lastY = 360;
+
     // Game state
     GameState              State;
     GLboolean              Keys[1024];
@@ -43,10 +48,9 @@ public:
     // GameLoop
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
-    void Render();
+    void Render(GLfloat dt);
 private:
     LevelRenderer* _level_renderer;
-    Camera _camera;
 };
 
 #endif
