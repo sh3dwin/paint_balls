@@ -16,47 +16,47 @@ public:
 		_color = color;
 		float data[] = {
 			// positions       
-			0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f,
 
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,
 
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f,  1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
 
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  1.0f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f
 		};
 
 		unsigned int VAO, VBO;
@@ -68,8 +68,10 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
 		glBindVertexArray(VAO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
 
 		this->_VAO = VAO;
 	}
@@ -81,13 +83,20 @@ public:
 		shader->SetMatrix4("view", camera->GetViewMatrix());
 		shader->SetMatrix4("projection", glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 1000.0f));
 		glm::mat4 model = glm::mat4(1.0f);
+		shader->SetMatrix4("model", model);
+
+
 		model = glm::translate(model, _position);
 		model = glm::scale(model, glm::vec3(0.1f));
 		shader->SetMatrix4("model", model);
 		shader->SetVector3f("aColor", _color);
 
+		
+
 		glBindVertexArray(_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUseProgram(0);
 	}
 private:
 	glm::vec3 _position;

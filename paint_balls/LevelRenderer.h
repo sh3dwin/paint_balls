@@ -82,13 +82,14 @@ public:
 		}
 	}
 
-	void draw(Camera& camera) {
+	void draw(Camera* camera) {
 		std::cout << "LEVEL_RENDERER: Drawing " << _walls.size() << " walls...\n";
+
 		for (Wall w : _walls) {
-			w.Draw(&camera);
+			w.Draw(camera);
 		}
 		for (Light light : _lights) {
-			light.Draw(&camera);
+			light.Draw(camera);
 		}
 	}
 

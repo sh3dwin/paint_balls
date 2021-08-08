@@ -16,6 +16,7 @@
 #include <glfw/glfw3.h>
 
 #include "LevelRenderer.h"
+#include "resource_manager.h"
 
 
 // Represents the current state of the game

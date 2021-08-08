@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
@@ -82,19 +83,18 @@ int main(int argc, char* argv[])
 
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        std::cout << "CAMERA POSITION: " << PaintBalls._camera.Position.x << " " << PaintBalls._camera.Position.y << " " << PaintBalls._camera.Position.z << "\n";
         // Calculate delta time
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        glfwPollEvents();
 
-        //deltaTime = 0.001f;
+        glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+
         // Manage user input
         PaintBalls.ProcessInput(deltaTime);
+        std::cout << "CAMERA POSITION: " << PaintBalls._camera.Position.x << " " << PaintBalls._camera.Position.y << " " << PaintBalls._camera.Position.z << "\n";
 
         // Update Game state
         PaintBalls.Update(deltaTime);
@@ -103,6 +103,7 @@ int main(int argc, char* argv[])
         PaintBalls.Render(deltaTime);
 
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     // Delete all resources as loaded using the resource manager

@@ -72,9 +72,9 @@ public:
 		glBindVertexArray(VAO);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
 		_VAO = VAO;
@@ -86,28 +86,39 @@ public:
 
 		shader->SetVector3f("viewPos", camera->Position);
 
-		shader->SetVector3f("material.ambient", 1.0f, 0.5f, 0.31f);
 		shader->SetInteger("material.diffuse", 0);
 		shader->SetInteger("material.specular", 1);
 		shader->SetFloat("material.shininess", 64.0f);
 
+		shader->SetVector3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		shader->SetVector3f("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		shader->SetVector3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-		shader->SetVector3f("pointLights[0].position", glm::vec3(2.f, 2.f, 2.f));
+		shader->SetVector3f("pointLights[0].position", glm::vec3(2.0f, 2.0f, 2.0f));
 		shader->SetVector3f("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		shader->SetVector3f("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		shader->SetVector3f("pointLights[0].diffuse", 1.0f, 0.0f, 0.0f);
 		shader->SetVector3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
 		shader->SetFloat("pointLights[0].constant", 1.0f);
 		shader->SetFloat("pointLights[0].linear", 0.09);
 		shader->SetFloat("pointLights[0].quadratic", 0.032);
 
+		shader->SetVector3f("pointLights[1].position", glm::vec3(1.0f, -2.0f, 3.0f));
+		shader->SetVector3f("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[1].diffuse", 0.0f, 0.0f, 1.0f);
+		shader->SetVector3f("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+		shader->SetFloat("pointLights[1].constant", 1.0f);
+		shader->SetFloat("pointLights[1].linear", 0.09);
+		shader->SetFloat("pointLights[1].quadratic", 0.032);
+
 		shader->SetMatrix4("projection", glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 1000.0f));
 		shader->SetMatrix4("view", camera->GetViewMatrix());
-
 		glm::mat4 model = glm::mat4(1.0f);
-		shader->SetMatrix4("model", glm::translate(model, _position));
+		shader->SetMatrix4("model", model);
 
-		Texture2D* diffuse = ResourceManager::GetTexture("container");
-		Texture2D* specular = ResourceManager::GetTexture("container_specular");
+		Texture2D* diffuse = ResourceManager::GetTexture("wooden_wall");
+		Texture2D* specular = ResourceManager::GetTexture("wooden_wall");
+
 
 		glActiveTexture(GL_TEXTURE0);
 		diffuse->Bind();
@@ -115,8 +126,18 @@ public:
 		glActiveTexture(GL_TEXTURE1);
 		specular->Bind();
 
+
+		model = glm::mat4(1.0f);
+		shader->SetMatrix4("model", glm::translate(model, _position));
+
+		
+
 		glBindVertexArray(_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
+		
 	}
 protected:
 	unsigned int _VAO;

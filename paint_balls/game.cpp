@@ -9,7 +9,6 @@
 ** option) any later version.
 ******************************************************************/
 #include "game.h"
-#include "resource_manager.h"
 
 
 
@@ -35,6 +34,7 @@ void Game::Init()
 
     _level_renderer = new LevelRenderer(new unsigned int[9]{1, 1, 0, 0, 0, 0, 1, 0, 0}, 3);
     _level_renderer->addLight(glm::vec3(2.f, 2.f, 2.f), glm::vec3(1.f, 0.0f, 0.0f));
+    _level_renderer->addLight(glm::vec3(1.0f, -2.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
 }
 
 void Game::Update(GLfloat dt)
@@ -69,6 +69,6 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render(GLfloat dt)
 {
-    _level_renderer->draw(_camera);
+    _level_renderer->draw(&_camera);
 }
 
