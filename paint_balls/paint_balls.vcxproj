@@ -146,12 +146,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="LevelRenderer.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="Sphere.cpp" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="Wall.h" />
@@ -164,10 +167,10 @@
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="light_shader.frag" />
-    <None Include="light_shader.vert" />
-    <None Include="multiple_lights.frag" />
-    <None Include="multiple_lights.vert" />
+    <None Include="resources\shaders\light_shader.frag" />
+    <None Include="resources\shaders\light_shader.vert" />
+    <None Include="resources\shaders\multiple_lights.frag" />
+    <None Include="resources\shaders\multiple_lights.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,15 +1,14 @@
 #pragma once
 
-#include <Gl/glew.h>
+#include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "shader.h"
 
-#include <string>
-#include <fstream>
-#include <sstream>
 #include <iostream>
-#include <cmath>
-#include <vector>
+
+#include "shader.h"
+#include "GameObject.h"
+#include "resource_manager.h"
+#include "Light.h"
 
 class Sphere {
 public:
@@ -18,22 +17,83 @@ public:
 
 	bool textured;
 
-	unsigned int VAO;
+	unsigned int _VAO;
 	unsigned int lineVAO;
-	glm::vec3 Position;
-	glm::vec3 Orientation = glm::vec3(1.0f, 0.0f, 0.0f);
-	glm::vec3 Angle = glm::vec3(-90.0f, 0.0f, 0.0f);
-	glm::mat4 model = glm::mat4(1.0f);
-	unsigned int numVertices = 0;
-	unsigned int numIndices = 0;
-	unsigned int numLineIndices = 0;
+	glm::vec3 _position;
 	float radius;
-	Shader shader;
+
 	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<float> texCoords;
+
 	int hLines;
 	int vLines;
+
 	std::vector<unsigned int> indices;
 	std::vector<unsigned int> lineIndices;
+	std::vector<float> interleavedVertices;
+
+
+	void Draw(Camera* camera, std::vector<Light*> lights) {
+		std::cout << "SPHERE: Rendering...\n";
+		Shader* shader = ResourceManager::GetShader("lightingShader");
+
+		shader->Use();
+
+		shader->SetVector3f("viewPos", camera->Position);
+
+		shader->SetInteger("material.diffuse", 0);
+		shader->SetInteger("material.specular", 1);
+		shader->SetFloat("material.shininess", 64.0f);
+
+		shader->SetVector3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		shader->SetVector3f("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("dirLight.diffuse", 0.8f, 0.8f, 0.8f);
+		shader->SetVector3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+		shader->SetVector3f("pointLights[0].position", lights[0]->_position);
+		shader->SetVector3f("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[0].diffuse", lights[0]->_color);
+		shader->SetVector3f("pointLights[0].specular", lights[0]->_color);
+		shader->SetFloat("pointLights[0].constant", 1.0f);
+		shader->SetFloat("pointLights[0].linear", 0.09);
+		shader->SetFloat("pointLights[0].quadratic", 0.032);
+
+		shader->SetVector3f("pointLights[1].position", lights[1]->_position);
+		shader->SetVector3f("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[1].diffuse", lights[1]->_color);
+		shader->SetVector3f("pointLights[1].specular", lights[1]->_color);
+		shader->SetFloat("pointLights[1].constant", 1.0f);
+		shader->SetFloat("pointLights[1].linear", 0.09);
+		shader->SetFloat("pointLights[1].quadratic", 0.032);
+
+		shader->SetMatrix4("projection", glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 1000.0f));
+		shader->SetMatrix4("view", camera->GetViewMatrix());
+		glm::mat4 model = glm::mat4(1.0f);
+		shader->SetMatrix4("model", model);
+
+		Texture2D* diffuse = ResourceManager::GetTexture("wooden_wall");
+		Texture2D* specular = ResourceManager::GetTexture("wooden_wall");
+
+
+		glActiveTexture(GL_TEXTURE0);
+		diffuse->Bind();
+
+		glActiveTexture(GL_TEXTURE1);
+		specular->Bind();
+
+
+		model = glm::mat4(1.0f);
+		shader->SetMatrix4("model", glm::translate(model, _position));
+
+
+
+		glBindVertexArray(_VAO);
+		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
+	}
 
 	/**
 	 * Creates a Sphere at global position (x, y, z) with radius r
@@ -42,36 +102,26 @@ public:
 	 * @param vertical_smoothness -  integer number ( > 2) that defines the number of horizontal lines (latitude)
 	 * @param shader - The shader which the sphere will be drawn with
 	*/
-	Sphere(float x, float y, float z, float r, int horizontal_smoothness, int vertical_smoothness, Shader shader, bool Textured) {
+	Sphere(glm::vec3 position, int horizontal_smoothness, int vertical_smoothness, bool Textured) {
+		std::cout << "SPHERE: Initializing...\n";
+		_position = position;
+		this->radius = 0.2f;
 		this->textured = Textured;
-		this->model = glm::rotate(model, glm::radians(this->Angle.x), glm::vec3(0.0f, 1.0f, .0f));
 		this->hLines = horizontal_smoothness;
 		this->vLines = vertical_smoothness;
-		this->shader = shader;
-		this->Position = glm::vec3(x, y, z);
-		this->radius = r;
-		this->numVertices = 0;
-		this->numIndices = 0;
-		this->VAO = 0;
+		this->_VAO = 0;
 		this->lineVAO = 0;
-		if (r == 0.0f)
-			return;
-		getVertices(); // get the array of vertices that define the sphere at Position
-		getIndicies(); // get the indices
+		//getVertices(); // get the array of vertices that define the sphere at Position
+		//getIndicies(); // get the indices
+		buildVerticesSmooth();
 		setVAO();
-		setLineVao();
+		//setLineVao();
 
 	}
 
 	void setVAO() {
-		float* v = new float[numVertices];
-		for (int i = 0; i < numVertices; i++) {
-			v[i] = vertices[i];
-		}
-		unsigned int* o = new unsigned int[numIndices];
-		for (int i = 0; i < numIndices; i++) {
-			o[i] = indices[i];
-		}
+		float* v = interleavedVertices.data();
+		unsigned int* o = indices.data();
 
 		unsigned int VAO;
 		glGenVertexArrays(1, &VAO);
@@ -80,200 +130,173 @@ public:
 		unsigned int VBO;
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices, v, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * interleavedVertices.size(), v, GL_STATIC_DRAW);
 
 		unsigned int EBO;
 		glGenBuffers(1, &EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices, o, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), o, GL_STATIC_DRAW);
 
-		if (this->textured) {
-			glBindVertexArray(VAO);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float) * 3));
-			glEnableVertexAttribArray(1);
-		}
-		else {
-			glBindVertexArray(VAO);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-		}
-
-		delete[] v;
-		delete[] o;
-		//this->vertices.clear();
-		this->indices.clear();
-
-		this->VAO = VAO;
-	}
-
-	void setLineVao() {
-		float* v = new float[numVertices];
-		for (int i = 0; i < numVertices; i++) {
-			v[i] = vertices[i] * 1.0001f;
-
-		}
-		unsigned int* o = new unsigned int[numLineIndices];
-		for (int i = 0; i < numLineIndices; i++) {
-			o[i] = lineIndices[i];
-		}
-		unsigned int VAO;
-		glGenVertexArrays(1, &VAO);
-		this->lineVAO = VAO;
 		glBindVertexArray(VAO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
+		glEnableVertexAttribArray(2);
 
-		unsigned int VBO;
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices, v, GL_STATIC_DRAW);
-
-		unsigned int EBO;
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numLineIndices, o, GL_STATIC_DRAW);
-
-		if (this->textured) {
-			glBindVertexArray(VAO);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float) * 3));
-			//glEnableVertexAttribArray(1);
-		}
-		else {
-			glBindVertexArray(VAO);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-		}
-
-
+		this->_VAO = VAO;
 	}
 
-	/**
-	 * Returns the vertices of a sphere with class param radius, hLines, vLines
-	 * @returns Float array containing said vertices
-	*/
-	void getVertices() {
-		std::vector<float> verticesV;
-		std::vector<float> lineVerticesV;
-		const float pi = 3.141592f;
+	void buildInterleavedVertices()
+	{
+		std::vector<float>().swap(interleavedVertices);
 
-		float x_pos, y_pos, z_pos, xy;
+		std::size_t i, j;
+		std::size_t count = vertices.size();
+		for (i = 0, j = 0; i < count; i += 3, j += 2)
+		{
+			interleavedVertices.push_back(vertices[i]);
+			interleavedVertices.push_back(vertices[i + 1]);
+			interleavedVertices.push_back(vertices[i + 2]);
 
-		float verticalStep = pi / this->vLines;
-		float horizontalStep = 2 * pi / this->hLines;
-		float vertAngle = 0, horzAngle = 0;
-		float s = 0;
-		float t = 0;
+			interleavedVertices.push_back(normals[i]);
+			interleavedVertices.push_back(normals[i + 1]);
+			interleavedVertices.push_back(normals[i + 2]);
 
-		for (float i = 0; i <= this->vLines; i++) {
-			vertAngle = pi / 2 - (i * verticalStep);
-			xy = this->radius * cos(vertAngle);
-			z_pos = this->radius * sin(vertAngle);
-
-			for (int j = 0; j <= this->hLines; j++) {
-				horzAngle = j * horizontalStep;
-
-				x_pos = xy * cos(horzAngle);
-				y_pos = xy * sin(horzAngle);
+			interleavedVertices.push_back(texCoords[j]);
+			interleavedVertices.push_back(texCoords[j + 1]);
+		}
+	}
 
 
-				verticesV.push_back(x_pos);
-				verticesV.push_back(y_pos);
-				verticesV.push_back(z_pos);
+	void buildVerticesSmooth()
+	{
+		const float PI = acos(-1);
+
+		// clear memory of prev arrays
+
+		unsigned int sectorCount = hLines;
+		unsigned int stackCount = vLines;
 
 
-				this->numVertices += 3;
+		float x, y, z, xy;                              // vertex position
+		float nx, ny, nz, lengthInv = 1.0f / radius;    // normal
+		float s, t;                                     // texCoord
 
-				if (this->textured) {
-					s = (float)j / hLines;
-					t = (float)i / vLines;
-					verticesV.push_back(s);
-					verticesV.push_back(t);
+		float sectorStep = 2 * PI / sectorCount;
+		float stackStep = PI / stackCount;
+		float sectorAngle, stackAngle;
 
-					this->numVertices += 2;
-				}
+		for (int i = 0; i <= stackCount; ++i)
+		{
+			stackAngle = PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+			xy = radius * cosf(stackAngle);             // r * cos(u)
+			z = radius * sinf(stackAngle);              // r * sin(u)
 
+			// add (sectorCount+1) vertices per stack
+			// the first and last vertices have same position and normal, but different tex coords
+			for (int j = 0; j <= sectorCount; ++j)
+			{
+				sectorAngle = j * sectorStep;           // starting from 0 to 2pi
+
+				// vertex position
+				x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
+				y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
+				addVertex(x, y, z);
+
+				// normalized vertex normal
+				nx = x * lengthInv;
+				ny = y * lengthInv;
+				nz = z * lengthInv;
+				addNormal(nx, ny, nz);
+
+				// vertex tex coord between [0, 1]
+				s = (float)j / sectorCount;
+				t = (float)i / stackCount;
+				addTexCoord(s, t);
 			}
 		}
-		this->vertices = verticesV;
-	}
 
-	/**
-	 * Returns the indecies of the vertices of the sphere
-	 * @returns Float array containing said vertices
-	*/
-	void getIndicies() {
-		std::vector<unsigned int> indicesV;
-		std::vector<unsigned int> lineIndicesV;
+		// indices
+		//  k1--k1+1
+		//  |  / |
+		//  | /  |
+		//  k2--k2+1
+		unsigned int k1, k2;
+		for (int i = 0; i < stackCount; ++i)
+		{
+			k1 = i * (sectorCount + 1);     // beginning of current stack
+			k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-		unsigned int p1 = 0, p2 = 0;
-
-		for (int i = 0; i < this->vLines; ++i) {
-			p1 = i * (this->hLines + 1);
-			p2 = p1 + this->hLines + 1;
-
-			for (int j = 0; j < this->hLines; ++j, ++p1, p2++) {
-				if (i != 0) {
-					indicesV.push_back(p1);
-					indicesV.push_back(p2);
-					indicesV.push_back(p1 + 1);
-					//printf("(%d, %d, %d)\n", p1, p2, p1 + 1);
-					this->numIndices += 3;
-				}
-
-				if (i != vLines - 1) {
-					indicesV.push_back(p1 + 1);
-					indicesV.push_back(p2);
-					indicesV.push_back(p2 + 1);
-					this->numIndices += 3;
-					//printf("(%d, %d, %d)\n", p1 + 1, p2, p2 + 1);
-				}
-
-				lineIndicesV.push_back(p1);
-				lineIndicesV.push_back(p2);
-				this->numLineIndices += 2;
+			for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+			{
+				// 2 triangles per sector excluding 1st and last stacks
 				if (i != 0)
 				{
-					lineIndicesV.push_back(p1);
-					lineIndicesV.push_back(p1 + 1);
-					this->numLineIndices += 2;
+					addIndices(k1, k2, k1 + 1);   // k1---k2---k1+1
 				}
 
+				if (i != (stackCount - 1))
+				{
+					addIndices(k1 + 1, k2, k2 + 1); // k1+1---k2---k2+1
+				}
+
+				// vertical lines for all stacks
+				lineIndices.push_back(k1);
+				lineIndices.push_back(k2);
+				if (i != 0)  // horizontal lines except 1st stack
+				{
+					lineIndices.push_back(k1);
+					lineIndices.push_back(k1 + 1);
+				}
 			}
 		}
-		this->indices = indicesV;
-		this->lineIndices = lineIndicesV;
+
+		// generate interleaved vertex array as well
+		buildInterleavedVertices();
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+// add single vertex to array
+///////////////////////////////////////////////////////////////////////////////
+	void addVertex(float x, float y, float z)
+	{
+		vertices.push_back(x);
+		vertices.push_back(y);
+		vertices.push_back(z);
 	}
 
 
 
-
-	void printArr() {
-		for (int i = 0; i < this->numVertices; i += 5) {
-			std::cout << this->vertices[i] << " " << this->vertices[i + 1] << " " << this->vertices[i + 2] << "\n Texture: " << this->vertices[i + 3] << " " << this->vertices[i + 4] << "\n";
-		}
-		std::cout << std::endl;
-		for (int i = 0; i < this->numIndices; i++) {
-			std::cout << this->indices[i] << " ";
-		}
-		std::cout << std::endl;
-	}
-	/*
-	void setVertices(std::vector<float> vector) {
-		this->vertices = new float[vector.size()];
-		std::cout << "Size: " << vector.size() << std::endl;
-		for (int i = 0; i < vector.size(); i++) {
-			this->vertices[i] = vector[i];
-		}
+	///////////////////////////////////////////////////////////////////////////////
+	// add single normal to array
+	///////////////////////////////////////////////////////////////////////////////
+	void addNormal(float nx, float ny, float nz)
+	{
+		normals.push_back(nx);
+		normals.push_back(ny);
+		normals.push_back(nz);
 	}
 
-	void setIndices(std::vector<unsigned int> vector) {
-		this->indices = new unsigned int[vector.size()];
-		std::cout << "Size: " << vector.size() << std::endl;
-		for (int i = 0; i < vector.size(); i++) {
-			this->indices[i] = vector[i];
-		}
-	}*/
+
+
+	///////////////////////////////////////////////////////////////////////////////
+	// add single texture coord to array
+	///////////////////////////////////////////////////////////////////////////////
+	void addTexCoord(float s, float t)
+	{
+		texCoords.push_back(s);
+		texCoords.push_back(t);
+	}
+
+	void addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
+	{
+		indices.push_back(i1);
+		indices.push_back(i2);
+		indices.push_back(i3);
+	}
+
+
 
 };

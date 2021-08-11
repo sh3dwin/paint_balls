@@ -10,55 +10,20 @@
 #include "resource_manager.h"
 #include "Light.h"
 
-class Wall : public GameObject {
+class Floor {
 public:
-	Wall(glm::vec3 position) {
+	glm::vec3 _position;
+	unsigned int _VAO;
 
+	Floor(glm::vec3 position){
 		_position = position;
-
 		float data[] = {
-			// positions          // normals           // texture coords
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+			-100.f,  0.f, -100.f,  0.0f,  1.0f,  0.0f,  0.0f,   400.0f,
+			 100.f,  0.f, -100.f,  0.0f,  1.0f,  0.0f,  400.0f, 400.0f,
+			 100.f,  0.f,  100.f,  0.0f,  1.0f,  0.0f,  400.0f, 0.0f,
+			 100.f,  0.f,  100.f,  0.0f,  1.0f,  0.0f,  400.0f, 0.0f,
+			-100.f,  0.f,  100.f,  0.0f,  1.0f,  0.0f,  0.0f,   0.0f,
+			-100.f,  0.f, -100.f,  0.0f,  1.0f,  0.0f,  0.0f,   400.0f
 		};
 
 		unsigned int VAO, VBO;
@@ -78,9 +43,10 @@ public:
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		_VAO = VAO;
+		this->_VAO = VAO;
 	}
-	virtual void Draw(Camera* camera, std::vector<Light*> lights) {
+
+	void Draw(Camera* camera, std::vector<Light*> lights) {
 		Shader* shader = ResourceManager::GetShader("lightingShader");
 
 		shader->Use();
@@ -114,11 +80,12 @@ public:
 
 		shader->SetMatrix4("projection", glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 1000.0f));
 		shader->SetMatrix4("view", camera->GetViewMatrix());
+
 		glm::mat4 model = glm::mat4(1.0f);
 		shader->SetMatrix4("model", model);
 
-		Texture2D* diffuse = ResourceManager::GetTexture("wooden_wall");
-		Texture2D* specular = ResourceManager::GetTexture("wooden_wall");
+		Texture2D* diffuse = ResourceManager::GetTexture("tile_diffuse");
+		Texture2D* specular = ResourceManager::GetTexture("tile_specular");
 
 
 		glActiveTexture(GL_TEXTURE0);
@@ -129,21 +96,19 @@ public:
 
 
 		model = glm::mat4(1.0f);
+		
+		//model = glm::scale(model, glm::vec3(100.f, 1.f, 100.f));
 		shader->SetMatrix4("model", glm::translate(model, _position));
 
-		
+
 
 		glBindVertexArray(_VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		std::cout << "FLOOR: Rendering...\n";
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
-		
 	}
-
-
-	glm::vec3 _position;
-protected:
-	unsigned int _VAO;
-	
 };

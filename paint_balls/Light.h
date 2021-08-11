@@ -12,6 +12,7 @@
 class Light : public GameObject {
 public:
 	Light(glm::vec3 position, glm::vec3 color) {
+		time_of_creation = glfwGetTime();
 		_position = position;
 		_color = color;
 		float data[] = {
@@ -85,7 +86,6 @@ public:
 		glm::mat4 model = glm::mat4(1.0f);
 		shader->SetMatrix4("model", model);
 
-
 		model = glm::translate(model, _position);
 		model = glm::scale(model, glm::vec3(0.1f));
 		shader->SetMatrix4("model", model);
@@ -98,8 +98,14 @@ public:
 
 		glUseProgram(0);
 	}
-private:
+
+	void Update(GLfloat dt) {
+		_position.y = _position.y + (dt * 0.5 * sinf(glfwGetTime() - time_of_creation) * cosf(glfwGetTime() - time_of_creation));
+	}
+public:
 	glm::vec3 _position;
 	glm::vec3 _color;
 	unsigned int _VAO;
+private:
+	double time_of_creation;
 };

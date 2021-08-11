@@ -50,8 +50,24 @@ public:
     void ProcessInput(GLfloat dt);
     void Update(GLfloat dt);
     void Render(GLfloat dt);
+    void generateLayout(unsigned int layout[], unsigned int size);
+    void addLight(glm::vec3 position, glm::vec3 color);
+    void addPlayer();
+    void Load(const GLchar* file, unsigned int size);
 private:
+    void doCollisions();
+    GLboolean CheckCollision(glm::vec3 position, Wall& wall);
+    GLboolean CheckCollision(glm::vec3 _position, float radius, Wall& wall);
+    GLboolean CheckCollision(Sphere& projectile, Sphere& ball);
     LevelRenderer* _level_renderer;
+    std::vector<Wall*> _walls;
+    std::vector<Light*> _lights;
+    std::vector<Sphere*> _players;
+    unsigned int* _layout;
+    unsigned int _size;
+
+    Floor* _floor;
+
 };
 
 #endif

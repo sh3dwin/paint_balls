@@ -51,6 +51,15 @@
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Floor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">
@@ -70,16 +79,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="multiple_lights.vert">
+    <None Include="resources\shaders\light_shader.frag">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="multiple_lights.frag">
+    <None Include="resources\shaders\light_shader.vert">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="light_shader.vert">
+    <None Include="resources\shaders\multiple_lights.frag">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="light_shader.frag">
+    <None Include="resources\shaders\multiple_lights.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
