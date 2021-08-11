@@ -33,6 +33,7 @@ struct PointLight {
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in vec3 BaseColor;
 
 uniform vec3 viewPos;
 uniform DirLight dirLight;
@@ -61,7 +62,8 @@ void main()
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
     
-    FragColor = vec4(result, 1.0);
+    //result = result * baseColor;
+    FragColor = vec4(result * BaseColor, 1.0);
     
 }
 

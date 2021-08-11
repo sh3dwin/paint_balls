@@ -148,9 +148,9 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="LevelRenderer.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="Sphere.cpp" />

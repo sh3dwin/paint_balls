@@ -6,10 +6,10 @@
 #include <iostream>
 
 #include "shader.h"
-#include "GameObject.h"
+#include <glfw/glfw3.h>
 #include "resource_manager.h"
 
-class Light : public GameObject {
+class Light {
 public:
 	Light(glm::vec3 position, glm::vec3 color) {
 		time_of_creation = glfwGetTime();

@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "shader.h"
-#include "GameObject.h"
 #include "resource_manager.h"
 #include "Light.h"
 
@@ -51,6 +50,7 @@ public:
 
 		shader->Use();
 
+		shader->SetVector3f("baseColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		shader->SetVector3f("viewPos", camera->Position);
 
 		shader->SetInteger("material.diffuse", 0);

@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "shader.h"
-#include "GameObject.h"
 #include "resource_manager.h"
 #include "Light.h"
 
@@ -20,6 +19,7 @@ public:
 	unsigned int _VAO;
 	unsigned int lineVAO;
 	glm::vec3 _position;
+	glm::vec3 _color;
 	float radius;
 
 	std::vector<float> vertices;
@@ -40,6 +40,7 @@ public:
 
 		shader->Use();
 
+		shader->SetVector3f("baseColor", _color);
 		shader->SetVector3f("viewPos", camera->Position);
 
 		shader->SetInteger("material.diffuse", 0);
@@ -98,17 +99,33 @@ public:
 	/**
 	 * Creates a Sphere at global position (x, y, z) with radius r
 	 *
-	 * @param horizontal_smoothness - integer number ( > 2) that defines the number of vertical lines (longitude)
-	 * @param vertical_smoothness -  integer number ( > 2) that defines the number of horizontal lines (latitude)
-	 * @param shader - The shader which the sphere will be drawn with
 	*/
-	Sphere(glm::vec3 position, int horizontal_smoothness, int vertical_smoothness, bool Textured) {
+	Sphere(glm::vec3 position, float radius, bool Textured) {
 		std::cout << "SPHERE: Initializing...\n";
 		_position = position;
-		this->radius = 0.2f;
+		_color = glm::vec3(1.0f);
+		this->radius = radius;
 		this->textured = Textured;
-		this->hLines = horizontal_smoothness;
-		this->vLines = vertical_smoothness;
+		this->hLines = 100;
+		this->vLines = 100;
+		this->_VAO = 0;
+		this->lineVAO = 0;
+		//getVertices(); // get the array of vertices that define the sphere at Position
+		//getIndicies(); // get the indices
+		buildVerticesSmooth();
+		setVAO();
+		//setLineVao();
+
+	}
+
+	Sphere(glm::vec3 position, float radius, bool Textured, glm::vec3 color) {
+		std::cout << "SPHERE: Initializing...\n";
+		_position = position;
+		_color = color;
+		this->radius = radius;
+		this->textured = Textured;
+		this->hLines = 100;
+		this->vLines = 100;
 		this->_VAO = 0;
 		this->lineVAO = 0;
 		//getVertices(); // get the array of vertices that define the sphere at Position

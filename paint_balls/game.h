@@ -15,6 +15,7 @@
 #include <GL/glew.h>
 #include <glfw/glfw3.h>
 
+
 #include "LevelRenderer.h"
 #include "resource_manager.h"
 
@@ -32,7 +33,11 @@ enum GameState {
 class Game
 {
 public:
-
+    std::vector<Wall*> _walls;
+    std::vector<Light*> _lights;
+    std::vector<Projectile*> _projectiles;
+    Floor* _floor;
+    Sphere* _player;
     Camera _camera;
     bool firstMouse = true;
     float lastX = 640, lastY = 360;
@@ -56,17 +61,13 @@ public:
     void Load(const GLchar* file, unsigned int size);
 private:
     void doCollisions();
+    void createProjectile();
     GLboolean CheckCollision(glm::vec3 position, Wall& wall);
     GLboolean CheckCollision(glm::vec3 _position, float radius, Wall& wall);
     GLboolean CheckCollision(Sphere& projectile, Sphere& ball);
     LevelRenderer* _level_renderer;
-    std::vector<Wall*> _walls;
-    std::vector<Light*> _lights;
-    std::vector<Sphere*> _players;
     unsigned int* _layout;
     unsigned int _size;
-
-    Floor* _floor;
 
 };
 

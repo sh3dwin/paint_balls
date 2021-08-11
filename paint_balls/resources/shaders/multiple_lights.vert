@@ -6,13 +6,16 @@ layout (location = 2) in vec2 aTexCoords;
 out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
+out vec3 BaseColor;
 
+uniform vec3 baseColor;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main()
 {
+    BaseColor = baseColor;
     FragPos = vec3(model * vec4(aPos, 1.0));
     Normal = mat3(transpose(inverse(model))) * aNormal;  
     TexCoords = aTexCoords;

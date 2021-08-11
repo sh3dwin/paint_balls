@@ -16,6 +16,7 @@
 Game::Game(GLuint width, GLuint height, Camera camera)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height), _camera(camera)
 {
+    this->_level_renderer = new LevelRenderer();
 }
 
 Game::~Game()
@@ -66,8 +67,8 @@ void Game::Init()
     }
 
 
-    addLight(glm::vec3(2.f, 2.f, 2.f), glm::vec3(1.f, 0.0f, 0.0f));
-    addLight(glm::vec3(4.0f, 2.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
+    addLight(glm::vec3(2.f, 1.f, 2.f), glm::vec3(1.f, 0.0f, 0.0f));
+    addLight(glm::vec3(4.0f, 1.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
     addPlayer();
 }
 
@@ -115,11 +116,17 @@ void Game::addLight(glm::vec3 position, glm::vec3 color) {
 }
 
 void Game::addPlayer() {
-    this->_players.push_back(new Sphere(glm::vec3(4.0f, this->_floor->_position.y + 0.2f, 4.0f), 100, 100, GL_TRUE));
+    _player = new Sphere(glm::vec3(4.0f, this->_floor->_position.y + 0.2f, 4.0f), 0.2f, GL_TRUE);
 }
 
 void Game::Update(GLfloat dt)
 {
+    for (int i = 0; i < _projectiles.size(); i++) {
+        _projectiles[i]->Update(dt);
+        if (!_projectiles[i]->_solid) {
+            _projectiles.erase(_projectiles.begin() + i);
+        }
+    }
     for (Light* light : _lights) {
         light->Update(dt);
     }
@@ -145,6 +152,30 @@ void Game::ProcessInput(GLfloat dt)
             std::cout << "CAMERA: Moving RIGHT..." << std::endl;
             _camera.ProcessKeyboard(RIGHT, dt);
         }
+        if (this->Keys[GLFW_MOUSE_BUTTON_LEFT]) {
+            std::cout << "PROJECTILE: CREATING..." << std::endl;
+            _projectiles.push_back(new Projectile(_camera.Position, _camera.Front, glm::vec3(1.0f, 1.0f, 1.0f), 50));
+        }
+        if (this->Keys[GLFW_KEY_F]) {
+            
+            std::cout << "PROJECTILE: CREATING..." << std::endl;
+            float now = glfwGetTime();
+            float dtt = now - _level_renderer->lastPressed;
+
+            if (dtt > dt * 5 || true) {
+                _level_renderer->lastPressed = now;
+                createProjectile();
+            }
+        }
+        if (this->Keys[GLFW_KEY_H]) {
+            float now = glfwGetTime();
+            float dtt = now - _level_renderer->lastPressed;
+
+            if (dtt > dt * 5){
+                _level_renderer->lastPressed = now;
+                _level_renderer->_draw = !_level_renderer->_draw;
+            }
+        }
 
     }
 
@@ -152,7 +183,7 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render(GLfloat dt)
 {
-    _level_renderer->draw(&_camera, _walls, _lights, _players, _floor);
+    _level_renderer->draw(&_camera, _walls, _lights, _projectiles, _player, _floor);
 }
 
 void Game::doCollisions() {
@@ -173,5 +204,15 @@ GLboolean Game::CheckCollision(glm::vec3 _position, float radius, Wall& wall) {
 
 GLboolean Game::CheckCollision(Sphere& projectile, Sphere& ball) {
 
+}
+
+void Game::createProjectile() {
+    glm::vec3 color;
+    float x = abs(rand() % 200) / 100.0;
+    float y = abs(rand() % 200) / 100.0;
+    float z = abs(rand() % 200) / 100.0;
+    std::cout << x << " " << y << " " << z << "  ==================== COLOR\n";
+    color = glm::vec3(x, y, z);
+    this->_projectiles.push_back(new Projectile(_camera.Position, _camera.Front, color, 10));
 }
 
