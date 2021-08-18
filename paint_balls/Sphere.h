@@ -35,7 +35,7 @@ public:
 
 
 	void Draw(Camera* camera, std::vector<Light*> lights) {
-		std::cout << "SPHERE: Rendering...\n";
+		//std::cout << "SPHERE: Rendering...\n";
 		Shader* shader = ResourceManager::GetShader("lightingShader");
 
 		shader->Use();

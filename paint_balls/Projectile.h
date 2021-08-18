@@ -38,7 +38,7 @@ public:
 
 	void Update(GLfloat dt) {
 		_position += _direction * _velocity * dt;
-		_gravity += 0.1 * dt;
+		_gravity += 0.1 * dt / 100;
 		_position.y -= _gravity;
 		this->_ball->_position = _position;
 		if (_position.y <= -5.0f || _position.x > 500.0f || _position.z > 500.0f || _position.y >= 500.5f || _position.x < -500.0f || _position.z < -500.0f) {
@@ -47,7 +47,7 @@ public:
 	}
 
 	void Draw(Camera* camera, std::vector<Light*> lights) {
-		std::cout << "PROJECTILE: DRAWING AT" << _position.x  << " " << _position.y  << " " << _position.z << "..." << std::endl;
+		//std::cout << "PROJECTILE: DRAWING AT" << _position.x  << " " << _position.y  << " " << _position.z << "..." << std::endl;
 		this->_ball->Draw(camera, lights);
 	}
 };

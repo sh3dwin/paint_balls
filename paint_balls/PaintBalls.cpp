@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
         // Manage user input
         PaintBalls.ProcessInput(deltaTime);
-        std::cout << "CAMERA POSITION: " << PaintBalls._camera.Position.x << " " << PaintBalls._camera.Position.y << " " << PaintBalls._camera.Position.z << "\n";
+        //std::cout << "CAMERA POSITION: " << PaintBalls._camera.Position.x << " " << PaintBalls._camera.Position.y << " " << PaintBalls._camera.Position.z << "\n";
 
         // Update Game state
         PaintBalls.Update(deltaTime);

@@ -10,7 +10,7 @@
 ******************************************************************/
 #include "game.h"
 
-
+bool debug = false;
 
 
 Game::Game(GLuint width, GLuint height, Camera camera)
@@ -58,7 +58,7 @@ void Game::Init()
         for (unsigned int i = 0; i < _size * _size; i++) {
             if (_layout[i] == 1) {
                 std::cout << "LEVEL_RENDERER: PSUHGING...\n";
-                _walls.push_back(new Wall(glm::vec3((i / _size) * 1.0f, 0.0f, (i % _size) * 1.0f)));
+                _walls.push_back(new Wall(glm::vec3((i / _size) * 2.0f, 0.0f, (i % _size) * 2.0f)));
             }
         }
     }
@@ -130,6 +130,7 @@ void Game::Update(GLfloat dt)
     for (Light* light : _lights) {
         light->Update(dt);
     }
+    doCollisions();
 }
 
 
@@ -137,32 +138,37 @@ void Game::ProcessInput(GLfloat dt)
 {
     if (this->State == GAME_ACTIVE) {
         if (this->Keys[GLFW_KEY_W]) {
-            std::cout << "CAMERA: Moving FORWARD..." << std::endl;
+            if (debug)
+                std::cout << "CAMERA: Moving FORWARD..." << std::endl;
             _camera.ProcessKeyboard(FORWARD, dt);
         }
         if (this->Keys[GLFW_KEY_S]) {
-            std::cout << "CAMERA: Moving BACKWARD..." << std::endl;
+            if (debug)
+                std::cout << "CAMERA: Moving BACKWARD..." << std::endl;
             _camera.ProcessKeyboard(BACKWARD, dt);
         }
         if (this->Keys[GLFW_KEY_A]) {
-            std::cout << "CAMERA: Moving LEFT..." << std::endl;
+            if (debug)
+                std::cout << "CAMERA: Moving LEFT..." << std::endl;
             _camera.ProcessKeyboard(LEFT, dt);
         }
         if (this->Keys[GLFW_KEY_D]) {
-            std::cout << "CAMERA: Moving RIGHT..." << std::endl;
+            if (debug)
+                std::cout << "CAMERA: Moving RIGHT..." << std::endl;
             _camera.ProcessKeyboard(RIGHT, dt);
         }
         if (this->Keys[GLFW_MOUSE_BUTTON_LEFT]) {
-            std::cout << "PROJECTILE: CREATING..." << std::endl;
+            if (debug)
+                std::cout << "PROJECTILE: CREATING..." << std::endl;
             _projectiles.push_back(new Projectile(_camera.Position, _camera.Front, glm::vec3(1.0f, 1.0f, 1.0f), 50));
         }
         if (this->Keys[GLFW_KEY_F]) {
-            
-            std::cout << "PROJECTILE: CREATING..." << std::endl;
+            if(debug)
+                std::cout << "PROJECTILE: CREATING..." << std::endl;
             float now = glfwGetTime();
             float dtt = now - _level_renderer->lastPressed;
 
-            if (dtt > dt * 5 || true) {
+            if (dtt > dt * 5) {
                 _level_renderer->lastPressed = now;
                 createProjectile();
             }
@@ -176,6 +182,9 @@ void Game::ProcessInput(GLfloat dt)
                 _level_renderer->_draw = !_level_renderer->_draw;
             }
         }
+        if (this->Keys[GLFW_KEY_V]) {
+                debug = !debug;
+        }
 
     }
 
@@ -187,17 +196,49 @@ void Game::Render(GLfloat dt)
 }
 
 void Game::doCollisions() {
-
+    for (Projectile* projectile : _projectiles) {
+        for (Wall* wall : _walls) {
+            if (CheckCollision(projectile, wall)) {
+                std::cout << "COLLISION: Detected!\n";
+            }
+        }
+    }
 }
 
-GLboolean Game::CheckCollision(glm::vec3 position, Wall& wall) {
+GLboolean Game::CheckCollision(Projectile* projectile, Wall* wall) {
+    {
+        float sphereXDistance = abs(projectile->_position.x - wall->_position.x);
+        float sphereYDistance = abs(projectile->_position.y - wall->_position.y);
+        float sphereZDistance = abs(projectile->_position.z - wall->_position.z);
 
+        if (sphereXDistance >= (1 + projectile->_ball->radius)) { return false; }
+        if (sphereYDistance >= (1 + projectile->_ball->radius)) { return false; }
+        if (sphereZDistance >= (1 + projectile->_ball->radius)) { return false; }
+
+        float max = std::fmax(sphereXDistance, sphereZDistance);
+
+        if (sphereXDistance == max) {
+            projectile->_direction.x = -projectile->_direction.x;
+            return true;
+        }
+        if (sphereZDistance == max) {
+            projectile->_direction.z = -projectile->_direction.z;
+            return true;
+        }
+
+        float cornerDistance_sq = ((sphereXDistance - 1) * (sphereXDistance - 1)) +
+            ((sphereYDistance - 1) * (sphereYDistance - 1) +
+                ((sphereYDistance - 1) * (sphereYDistance - 1)));
+
+        return (cornerDistance_sq < (projectile->_ball->radius * projectile->_ball->radius));
+
+    }
 }
 
 GLboolean Game::CheckCollision(glm::vec3 _position, float radius, Wall& wall) {
-    bool checkX = (_position.x + radius) >= wall._position.x && (wall._position.x + 1.0f) >= _position.x - radius;
-    bool checkY = (_position.y + radius) >= wall._position.y && (wall._position.y + 1.0f) >= _position.y - radius;
-    bool checkZ = (_position.z + radius) >= wall._position.z && (wall._position.z + 1.0f) >= _position.z - radius;
+    bool checkX = (_position.x + radius) >= wall._position.x && (wall._position.x + 1.0f) >= _position.x + radius;
+    bool checkY = (_position.y + radius) >= wall._position.y && (wall._position.y + 1.0f) >= _position.y + radius;
+    bool checkZ = (_position.z + radius) >= wall._position.z && (wall._position.z + 1.0f) >= _position.z + radius;
 
     return checkX && checkY && checkZ;
 }
@@ -213,6 +254,6 @@ void Game::createProjectile() {
     float z = abs(rand() % 200) / 100.0;
     std::cout << x << " " << y << " " << z << "  ==================== COLOR\n";
     color = glm::vec3(x, y, z);
-    this->_projectiles.push_back(new Projectile(_camera.Position, _camera.Front, color, 10));
+    this->_projectiles.push_back(new Projectile(_camera.Position + _camera.Front * glm::vec3(1.5), _camera.Front, color, 10));
 }
 

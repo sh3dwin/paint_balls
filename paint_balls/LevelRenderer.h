@@ -37,7 +37,7 @@ public:
 	std::vector<Projectile*> _projectiles,
 	Sphere* _player,
 	Floor* _floor) {
-		std::cout << "LEVEL_RENDERER: Drawing " << _walls.size() << " walls...\n";
+		//std::cout << "LEVEL_RENDERER: Drawing " << _walls.size() << " walls...\n";
 		if(_draw){
 			_floor->Draw(camera, _lights);
 			for (Wall* wall : _walls) {
@@ -47,7 +47,7 @@ public:
 		for (Projectile* projectile : _projectiles) {
 			projectile->Draw(camera, _lights);
 		}
-		std::cout << "LLEVEL_RENDERER: Rendering players...\n";
+		//std::cout << "LLEVEL_RENDERER: Rendering players...\n";
 		//player->_position = camera->Position + (camera->Front * 1.0f);
 		_player->Draw(camera, _lights);
 		for (Light* light : _lights) {
