@@ -64,7 +64,9 @@ private:
     void createProjectile();
     GLboolean CheckCollision(Projectile* projectile, Wall* wall);
     GLboolean CheckCollision(glm::vec3 _position, float radius, Wall& wall);
-    GLboolean CheckCollision(Sphere& projectile, Sphere& ball);
+    GLboolean CheckCollision(glm::vec3 playerPosition);
+    GLboolean xInside(float x);
+    GLboolean zInside(float z);
     LevelRenderer* _level_renderer;
     unsigned int* _layout;
     unsigned int _size;

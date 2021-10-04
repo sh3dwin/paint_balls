@@ -107,6 +107,8 @@ Shader* ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLc
 Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
 {
     // Create Texture object
+    std::cout << "OOGA::TEXTURE: Initializing\n";
+
     Texture2D* texture = new Texture2D();
     if (alpha)
     {
@@ -125,6 +127,6 @@ Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean al
     // Now generate texture
     texture->Generate(width, height, image);
     // And finally free image data
-    stbi_image_free(image);
+    //stbi_image_free(image);
     return texture;
 }

@@ -71,6 +71,37 @@ public:
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
+    void ProcessKeyboard(Camera_Movement direction, float deltaTime, GLboolean collidingX, GLboolean collidingZ)
+    {
+        //if (collidingX && collidingZ)
+            //return;
+        float velocity = MovementSpeed * deltaTime;
+        if (direction == FORWARD) {
+            if(!collidingZ)
+                Position.x += Front.x * velocity;
+            if (!collidingX)
+                Position.z += Front.z * velocity;
+        }
+        if (direction == BACKWARD) {
+            if (!collidingX)
+                Position.x -= Front.x * velocity;
+            if (!collidingZ)
+                Position.z -= Front.z * velocity;
+        }
+        if (direction == LEFT) {
+            if (!collidingX)
+                Position.x -= Right.x * velocity;
+            if (!collidingZ)
+                Position.z -= Right.z * velocity;
+        }
+        if (direction == RIGHT) {
+            if (!collidingX)
+                Position.x += Right.x * velocity;
+            if (!collidingZ)
+                Position.z += Right.z * velocity;
+        }
+    }
+
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
