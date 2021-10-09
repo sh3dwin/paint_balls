@@ -60,6 +60,9 @@
     <ClInclude Include="Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OverlayRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">
@@ -89,6 +92,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="resources\shaders\multiple_lights.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="resources\shaders\overlay.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="resources\shaders\overlay.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

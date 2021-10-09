@@ -17,7 +17,9 @@ Game::Game(GLuint width, GLuint height, Camera camera)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height), _camera(camera)
 {
     _camera.Position = glm::vec3(5.0f, 0.0f, 5.0f);
+    _ammunition = 100;
     this->_level_renderer = new LevelRenderer();
+    this->_overlay_renderer = new OverlayRenderer();
 }
 
 Game::~Game()
@@ -29,8 +31,13 @@ void Game::Init()
 {
     ResourceManager::LoadShader("resources/shaders/light_shader.vert", "resources/shaders/light_shader.frag", nullptr, "light");
     ResourceManager::LoadShader("resources/shaders/multiple_lights.vert", "resources/shaders/multiple_lights.frag", nullptr, "lightingShader");
+    ResourceManager::LoadShader("resources/shaders/overlay.vert", "resources/shaders/overlay.frag", nullptr, "ammunitionShader");
+
     ResourceManager::LoadTexture("resources/textures/wooden_wall.jpg", GL_FALSE, "wooden_wall");
     ResourceManager::LoadTexture("resources/textures/container.png", GL_FALSE, "container");
+    ResourceManager::LoadTexture("resources/textures/marble.PNG", GL_FALSE, "marble");
+    ResourceManager::LoadTexture("resources/textures/black_marble.jpg", GL_FALSE, "black_marble");
+    ResourceManager::LoadTexture("resources/textures/marble_specular.jpg", GL_FALSE, "marble_specular");
     ResourceManager::LoadTexture("resources/textures/container_specular.png", GL_FALSE, "container_specular");
     ResourceManager::LoadTexture("resources/textures/tile_diffuse.jpg", GL_FALSE, "tile_diffuse");
     ResourceManager::LoadTexture("resources/textures/tile_specular.jpg", GL_FALSE, "tile_specular");
@@ -68,8 +75,18 @@ void Game::Init()
     }
 
 
-    addLight(glm::vec3(2.f, 1.f, 2.f), glm::vec3(1.f, 0.0f, 0.0f));
-    addLight(glm::vec3(4.0f, 1.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
+    addLight(glm::vec3(10.f, 2.f, 13.f), glm::vec3(1.f, 0.0f, 0.0f));
+    addLight(glm::vec3(5.0f, 2.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
+    addLight(glm::vec3(2.f, 2.f, 12.f), glm::vec3(0.f, 1.0f, 0.0f));
+    addLight(glm::vec3(4.0f, 2.0f, 8.0f), glm::vec3(0.f, 1.0f, 1.0f));
+    addLight(glm::vec3(6.f, 2.f, 11.f), glm::vec3(1.f, 1.0f, 0.0f));
+    addLight(glm::vec3(14.0f, 2.0f, 1.0f), glm::vec3(1.f, 0.0f, 1.0f));
+    addColoredCube(glm::vec3(10.f, 1.f, 13.f), glm::vec3(1.f, 0.0f, 0.0f));
+    addColoredCube(glm::vec3(5.0f, 1.0f, 3.0f), glm::vec3(0.f, 0.0f, 1.0f));
+    addColoredCube(glm::vec3(2.f, 1.f, 12.f), glm::vec3(0.f, 1.0f, 0.0f));
+    addColoredCube(glm::vec3(4.0f, 1.0f, 8.0f), glm::vec3(0.f, 1.0f, 1.0f));
+    addColoredCube(glm::vec3(6.f, 1.f, 11.f), glm::vec3(1.f, 1.0f, 0.0f));
+    addColoredCube(glm::vec3(14.0f, 1.0f, 1.0f), glm::vec3(1.f, 0.0f, 1.0f));
     addPlayer();
 }
 
@@ -113,7 +130,7 @@ void Game::Load(const GLchar* file, unsigned int size) {
 }
 
 void Game::addLight(glm::vec3 position, glm::vec3 color) {
-    this->_lights.push_back(new Light(position, color));
+    this->_lights.push_back(new Light(position, color, true));
 }
 
 void Game::addPlayer() {
@@ -122,6 +139,7 @@ void Game::addPlayer() {
 
 void Game::Update(GLfloat dt)
 {
+    doCollisions();
     for (int i = 0; i < _projectiles.size(); i++) {
         _projectiles[i]->Update(dt);
         if (!_projectiles[i]->_solid) {
@@ -130,8 +148,7 @@ void Game::Update(GLfloat dt)
     }
     for (Light* light : _lights) {
         light->Update(dt);
-    }
-    doCollisions();
+    } 
 }
 
 
@@ -178,7 +195,13 @@ void Game::ProcessInput(GLfloat dt)
         if (this->Keys[GLFW_MOUSE_BUTTON_LEFT]) {
             if (debug)
                 std::cout << "PROJECTILE: CREATING..." << std::endl;
-            _projectiles.push_back(new Projectile(_camera.Position, _camera.Front, glm::vec3(1.0f, 1.0f, 1.0f), 50));
+            float now = glfwGetTime();
+            float dtt = now - _level_renderer->lastPressed;
+
+            if (dtt > dt * 5) {
+                _level_renderer->lastPressed = now;
+                createProjectile();
+            }
         }
         if (this->Keys[GLFW_KEY_F]) {
             if(debug)
@@ -188,8 +211,11 @@ void Game::ProcessInput(GLfloat dt)
 
             if (dtt > dt * 5) {
                 _level_renderer->lastPressed = now;
-                createProjectile();
+                Fire();
             }
+        }
+        if (this->Keys[GLFW_KEY_R]) {
+            _camera.Position = glm::vec3(5.0f, 0.0f, 5.0f);
         }
         if (this->Keys[GLFW_KEY_H]) {
             float now = glfwGetTime();
@@ -210,7 +236,8 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render(GLfloat dt)
 {
-    _level_renderer->draw(&_camera, _walls, _lights, _projectiles, _player, _floor);
+    _level_renderer->draw(&_camera, _walls, _lights, _projectiles, _player, _floor, _colored_cubes);
+    _overlay_renderer->draw(_ammunition);
 }
 
 void Game::doCollisions() {
@@ -220,43 +247,85 @@ void Game::doCollisions() {
                 std::cout << "COLLISION: Detected!\n";
             }
         }
+        for (Light* cube : _colored_cubes) {
+            if (!cube->_destroyed && CheckCollision(projectile, cube)) {
+                std::cout << "COLLISION: Detected!\n";
+            }
+        }
+        if (projectile->_position.y < -0.4) {
+            projectile->Bounce();
+            projectile->changeColor();
+        }
     }
 }
 
 GLboolean Game::CheckCollision(Projectile* projectile, Wall* wall) {
-    {
-        float sphereXDistance = abs(projectile->_position.x - wall->_position.x);
-        float sphereYDistance = abs(projectile->_position.y - wall->_position.y);
-        float sphereZDistance = abs(projectile->_position.z - wall->_position.z);
 
-        if (sphereXDistance >= (1 + projectile->_ball->radius)) { return false; }
-        if (sphereYDistance >= (1 + projectile->_ball->radius)) { return false; }
-        if (sphereZDistance >= (1 + projectile->_ball->radius)) { return false; }
+    float sphereXDistance = abs(projectile->_position.x - wall->_position.x);
+    float sphereYDistance = abs(projectile->_position.y - wall->_position.y);
+    float sphereZDistance = abs(projectile->_position.z - wall->_position.z);
 
-        float max = std::fmax(sphereXDistance, sphereZDistance);
+    if (sphereXDistance >= (1 + projectile->_ball->radius)) { return false; }
+    if (sphereYDistance >= (1 + projectile->_ball->radius)) { return false; }
+    if (sphereZDistance >= (1 + projectile->_ball->radius)) { return false; }
 
-        if (sphereXDistance == max) {
-            projectile->_direction.x = -projectile->_direction.x;
-            projectile->changeColor();
-            return true;
-        }
-        if (sphereZDistance == max) {
-            projectile->_direction.z = -projectile->_direction.z;
-            projectile->changeColor();
-            return true;
-        }
+    
 
-        float cornerDistance_sq = ((sphereXDistance - 1) * (sphereXDistance - 1)) +
-            ((sphereYDistance - 1) * (sphereYDistance - 1) +
-                ((sphereYDistance - 1) * (sphereYDistance - 1)));
+    float cornerDistance_sq = ((sphereXDistance - 1) * (sphereXDistance - 1)) +
+        ((sphereZDistance - 1) * (sphereZDistance - 1));
 
-        if (cornerDistance_sq < (projectile->_ball->radius * projectile->_ball->radius)) {
-            projectile->changeColor();
-            return true;
-        }
-        return false;
+    if (cornerDistance_sq < (projectile->_ball->radius * projectile->_ball->radius)) {
+        projectile->_direction.x = -projectile->_direction.x;
+        projectile->_direction.z = -projectile->_direction.z;
 
+        projectile->changeColor();
+        return true;
     }
+
+    if (sphereXDistance > sphereZDistance) {
+        projectile->_direction.x = -projectile->_direction.x;
+        projectile->changeColor();
+        return true;
+    }
+    else {
+        projectile->_direction.z = -projectile->_direction.z;
+        projectile->changeColor();
+        return true;
+    }
+    return false;
+}
+
+GLboolean Game::CheckCollision(Projectile* projectile, Light* cube) {
+    float sphereXDistance = abs(projectile->_position.x - cube->_position.x);
+    float sphereYDistance = abs(projectile->_position.y - cube->_position.y);
+    float sphereZDistance = abs(projectile->_position.z - cube->_position.z);
+
+    if (sphereXDistance >= (0.5 + projectile->_ball->radius)) { return false; }
+    if (sphereYDistance >= (0.5 + projectile->_ball->radius)) { return false; }
+    if (sphereZDistance >= (0.5 + projectile->_ball->radius)) { return false; }
+
+
+
+    float cornerDistance_sq = ((sphereXDistance - 0.5) * (sphereXDistance - 0.5)) +
+        ((sphereZDistance - 0.5) * (sphereZDistance - 0.5));
+
+    if (cornerDistance_sq < (projectile->_ball->radius * projectile->_ball->radius)) {  
+        cube->Hit(projectile->_color);
+        projectile->_solid = false;
+        return true;
+    }
+
+    if (sphereXDistance > sphereZDistance) {
+        cube->Hit(projectile->_color);
+        projectile->_solid = false;
+        return true;
+    }
+    else {
+        cube->Hit(projectile->_color);
+        projectile->_solid = false;
+        return true;
+    }
+    return false;
 }
 
 GLboolean Game::CheckCollision(glm::vec3 _position, float radius, Wall& wall) {
@@ -308,6 +377,17 @@ void Game::createProjectile() {
     float z = abs(rand() % 200) / 100.0;
     std::cout << x << " " << y << " " << z << "  ==================== COLOR\n";
     color = glm::vec3(x, y, z);
-    this->_projectiles.push_back(new Projectile(_camera.Position + _camera.Front * glm::vec3(1.5), _camera.Front, color, 10));
+    this->_projectiles.push_back(new Projectile(_camera.Position + _camera.Front * glm::vec3(1.1), _camera.Front, color, 20));
 }
 
+void Game::addColoredCube(glm::vec3 position, glm::vec3 color) {
+    this->_colored_cubes.push_back(new Light(position, color, false));
+}
+
+void Game::Fire() {
+    if (_ammunition == 0)
+        return;
+    _ammunition -= 1;
+    this->_overlay_renderer->PaintBallFired();
+    createProjectile();
+}

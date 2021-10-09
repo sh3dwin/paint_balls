@@ -150,6 +150,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="LevelRenderer.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="OverlayRenderer.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
@@ -171,6 +172,8 @@
     <None Include="resources\shaders\light_shader.vert" />
     <None Include="resources\shaders\multiple_lights.frag" />
     <None Include="resources\shaders\multiple_lights.vert" />
+    <None Include="resources\shaders\overlay.frag" />
+    <None Include="resources\shaders\overlay.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

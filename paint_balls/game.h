@@ -17,6 +17,7 @@
 
 
 #include "LevelRenderer.h"
+#include "OverlayRenderer.h" 
 #include "resource_manager.h"
 
 
@@ -35,6 +36,7 @@ class Game
 public:
     std::vector<Wall*> _walls;
     std::vector<Light*> _lights;
+    std::vector<Light*> _colored_cubes;
     std::vector<Projectile*> _projectiles;
     Floor* _floor;
     Sphere* _player;
@@ -58,18 +60,23 @@ public:
     void generateLayout(unsigned int layout[], unsigned int size);
     void addLight(glm::vec3 position, glm::vec3 color);
     void addPlayer();
+    void addColoredCube(glm::vec3 position, glm::vec3 color);
     void Load(const GLchar* file, unsigned int size);
+    void Fire();
 private:
     void doCollisions();
     void createProjectile();
     GLboolean CheckCollision(Projectile* projectile, Wall* wall);
     GLboolean CheckCollision(glm::vec3 _position, float radius, Wall& wall);
+    GLboolean CheckCollision(Projectile* projectile, Light* cube);
     GLboolean CheckCollision(glm::vec3 playerPosition);
     GLboolean xInside(float x);
     GLboolean zInside(float z);
     LevelRenderer* _level_renderer;
+    OverlayRenderer* _overlay_renderer;
     unsigned int* _layout;
     unsigned int _size;
+    unsigned int _ammunition;
 
 };
 

@@ -112,6 +112,38 @@ public:
 		shader->SetFloat("pointLights[1].linear", 0.09);
 		shader->SetFloat("pointLights[1].quadratic", 0.032);
 
+		shader->SetVector3f("pointLights[2].position", lights[2]->_position);
+		shader->SetVector3f("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[2].diffuse", lights[2]->_color);
+		shader->SetVector3f("pointLights[2].specular", lights[2]->_color);
+		shader->SetFloat("pointLights[2].constant", 1.0f);
+		shader->SetFloat("pointLights[2].linear", 0.09);
+		shader->SetFloat("pointLights[2].quadratic", 0.032);
+
+		shader->SetVector3f("pointLights[3].position", lights[3]->_position);
+		shader->SetVector3f("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[3].diffuse", lights[3]->_color);
+		shader->SetVector3f("pointLights[3].specular", lights[3]->_color);
+		shader->SetFloat("pointLights[3].constant", 1.0f);
+		shader->SetFloat("pointLights[3].linear", 0.09);
+		shader->SetFloat("pointLights[3].quadratic", 0.032);
+
+		shader->SetVector3f("pointLights[4].position", lights[4]->_position);
+		shader->SetVector3f("pointLights[4].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[4].diffuse", lights[4]->_color);
+		shader->SetVector3f("pointLights[4].specular", lights[4]->_color);
+		shader->SetFloat("pointLights[4].constant", 1.0f);
+		shader->SetFloat("pointLights[4].linear", 0.09);
+		shader->SetFloat("pointLights[4].quadratic", 0.032);
+
+		shader->SetVector3f("pointLights[5].position", lights[5]->_position);
+		shader->SetVector3f("pointLights[5].ambient", 0.05f, 0.05f, 0.05f);
+		shader->SetVector3f("pointLights[5].diffuse", lights[5]->_color);
+		shader->SetVector3f("pointLights[5].specular", lights[5]->_color);
+		shader->SetFloat("pointLights[5].constant", 1.0f);
+		shader->SetFloat("pointLights[5].linear", 0.09);
+		shader->SetFloat("pointLights[5].quadratic", 0.032);
+
 		shader->SetMatrix4("projection", glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 1000.0f));
 		shader->SetMatrix4("view", camera->GetViewMatrix());
 		glm::mat4 model = glm::mat4(1.0f);

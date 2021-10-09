@@ -106,17 +106,29 @@ public:
     {
         float velocity = MovementSpeed * deltaTime;
         if (direction == FORWARD) {
-            Position.x += Front.x * velocity;
-            Position.z += Front.z * velocity;
+            if(!(Position.x + Front.x * velocity <= 1.2 || Position.x + Front.x * velocity >= 16.8))
+                Position.x += Front.x * velocity;
+            if (!(Position.z + Front.z * velocity <= 1.2 || Position.z + Front.z * velocity >= 16.8))
+                Position.z += Front.z * velocity;
         }
         if (direction == BACKWARD) {
-            Position.x -= Front.x * velocity;
-            Position.z -= Front.z * velocity;
+            if (!(Position.x - Front.x * velocity <= 1.2 || Position.x - Front.x * velocity >= 16.8))
+                Position.x -= Front.x * velocity;
+            if (!(Position.z - Front.z * velocity <= 1.2 || Position.z - Front.z * velocity >= 16.8))
+                Position.z -= Front.z * velocity;
         }
-        if (direction == LEFT)
-            Position -= Right * velocity;
-        if (direction == RIGHT)
-            Position += Right * velocity;
+        if (direction == LEFT) {
+            if (!(Position.x - Right.x * velocity <= 1.2 || Position.x - Right.x * velocity >= 16.8))
+                Position.x -= Right.x * velocity;
+            if (!(Position.z - Right.z * velocity <= 1.2 || Position.z - Right.z * velocity >= 16.8))
+                Position.z -= Right.z * velocity;
+        }
+        if (direction == RIGHT) {
+            if (!(Position.x + Right.x * velocity <= 1.2 || Position.x + Right.x * velocity >= 16.8))
+                Position.x += Right.x * velocity;
+            if (!(Position.z + Right.z * velocity <= 1.2 || Position.z + Right.z * velocity >= 16.8))
+                Position.z += Right.z * velocity;
+        }
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

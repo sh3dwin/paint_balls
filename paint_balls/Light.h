@@ -11,8 +11,11 @@
 
 class Light {
 public:
-	Light(glm::vec3 position, glm::vec3 color) {
+	Light(glm::vec3 position, glm::vec3 color, bool isLight) {
+		this->_isLight = isLight;
+		this->_destroyed = false;
 		time_of_creation = glfwGetTime();
+		random = rand();
 		_position = position;
 		_color = color;
 		float data[] = {
@@ -78,6 +81,8 @@ public:
 	}
 
 	void Draw(Camera* camera) {
+		if (_destroyed)
+			return;
 		Shader* shader = ResourceManager::GetShader("light");
 		shader->Use();
 
@@ -87,9 +92,11 @@ public:
 		shader->SetMatrix4("model", model);
 
 		model = glm::translate(model, _position);
-		model = glm::scale(model, glm::vec3(0.1f));
+		if(_isLight)
+			model = glm::scale(model, glm::vec3(0.1f));
 		shader->SetMatrix4("model", model);
-		shader->SetVector3f("aColor", _color);
+		shader->SetVector3f("aColor", _color * ((_isLight) ? 1 : (0.3f + abs(sinf(glfwGetTime() * 0.5 - time_of_creation * random) * cosf(glfwGetTime() - time_of_creation * random)))));		
+
 
 		
 
@@ -100,12 +107,28 @@ public:
 	}
 
 	void Update(GLfloat dt) {
-		_position.y = _position.y + (dt * 0.5 * sinf(glfwGetTime() - time_of_creation) * cosf(glfwGetTime() - time_of_creation));
+		if(!_destroyed)
+			_position.y = _position.y + (dt * 0.5 * sinf(glfwGetTime() - time_of_creation * random) * cosf(glfwGetTime() - time_of_creation * random));
 	}
+
+	void Hit(glm::vec3 color) {
+		std::cout << "THE COLOR OF THE PROJECTILE ISSSS!!!! :::::: " << color.x << " " << color.y << " " << color.z << std::endl;
+		if (color.x > 0.0f && color.y > 0.0f && color.z > 0.0f)
+			return;
+		this->_color.x -= color.x;
+		this->_color.y -= color.y;
+		this->_color.z -= color.z;
+		if (_color.x <= 0.0f && _color.y <= 0.0f && _color.z <= 0.0f)
+			this->_destroyed = true;
+	}
+
 public:
 	glm::vec3 _position;
 	glm::vec3 _color;
+	bool _isLight;
+	bool _destroyed;
 	unsigned int _VAO;
 private:
-	double time_of_creation;
+	float time_of_creation;
+	int random;
 };
