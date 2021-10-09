@@ -14,6 +14,7 @@
 #include <string>
 
 #include <GL/glew.h>
+#include <vector>
 
 #include "texture.h"
 #include "shader.h"
@@ -34,6 +35,7 @@ public:
     static Shader* LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, const std::string& name);
     // Retrieves a stored sader
     static Shader* GetShader(const std::string& name);
+    static Texture2D* loadCubemap(std::vector<std::string> faces, GLboolean alpha, const std::string& name);
     // Loads (and generates) a texture from file
     static Texture2D* LoadTexture(const GLchar* file, GLboolean alpha, const std::string& name);
     // Retrieves a stored texture

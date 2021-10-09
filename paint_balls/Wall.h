@@ -149,8 +149,8 @@ public:
 		glm::mat4 model = glm::mat4(1.0f);
 		shader->SetMatrix4("model", model);
 
-		Texture2D* diffuse = ResourceManager::GetTexture("wooden_wall");
-		Texture2D* specular = ResourceManager::GetTexture("wooden_wall");
+		Texture2D* diffuse = ResourceManager::GetTexture("brick_wall");
+		Texture2D* specular = ResourceManager::GetTexture("brick_wall");
 
 
 		glActiveTexture(GL_TEXTURE0);

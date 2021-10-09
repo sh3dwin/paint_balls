@@ -38,6 +38,7 @@ public:
     std::vector<Light*> _lights;
     std::vector<Light*> _colored_cubes;
     std::vector<Projectile*> _projectiles;
+    SkyBox* skybox;
     Floor* _floor;
     Sphere* _player;
     Camera _camera;

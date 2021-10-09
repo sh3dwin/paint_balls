@@ -16,6 +16,7 @@
 #include "Floor.h"
 #include "Sphere.h"
 #include "Projectile.h"
+#include "SkyBox.h"
 
 
 
@@ -37,7 +38,8 @@ public:
 	std::vector<Projectile*> _projectiles,
 	Sphere* _player,
 	Floor* _floor,
-	std::vector<Light*> _colored_cubes) {
+	std::vector<Light*> _colored_cubes,
+	SkyBox* skybox) {
 		//std::cout << "LEVEL_RENDERER: Drawing " << _walls.size() << " walls...\n";
 		if(_draw){
 			_floor->Draw(camera, _lights);
@@ -58,7 +60,7 @@ public:
 		for (Light* cube : _colored_cubes) {
 			cube->Draw(camera);
 		}
-
+		skybox->Draw(camera);
 		
 	}
 

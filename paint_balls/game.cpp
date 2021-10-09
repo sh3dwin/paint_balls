@@ -20,6 +20,7 @@ Game::Game(GLuint width, GLuint height, Camera camera)
     _ammunition = 100;
     this->_level_renderer = new LevelRenderer();
     this->_overlay_renderer = new OverlayRenderer();
+    this->skybox = new SkyBox();
 }
 
 Game::~Game()
@@ -32,8 +33,24 @@ void Game::Init()
     ResourceManager::LoadShader("resources/shaders/light_shader.vert", "resources/shaders/light_shader.frag", nullptr, "light");
     ResourceManager::LoadShader("resources/shaders/multiple_lights.vert", "resources/shaders/multiple_lights.frag", nullptr, "lightingShader");
     ResourceManager::LoadShader("resources/shaders/overlay.vert", "resources/shaders/overlay.frag", nullptr, "ammunitionShader");
+    ResourceManager::LoadShader("resources/shaders/skybox.vert", "resources/shaders/skybox.frag", nullptr, "skybox");
+
+
+    std::vector<std::string> faces
+    {
+        ("resources/textures/skybox/nightsky_east.bmp"),
+        ("resources/textures/skybox/nightsky_west.bmp"),
+        ("resources/textures/skybox/nightsky_up.bmp"),
+        ("resources/textures/skybox/nightsky_down.bmp"),
+        ("resources/textures/skybox/nightsky_north.bmp"),
+        ("resources/textures/skybox/nightsky_south.bmp")
+    };
+
+    ResourceManager::loadCubemap(faces, GL_FALSE, "skybox");
 
     ResourceManager::LoadTexture("resources/textures/wooden_wall.jpg", GL_FALSE, "wooden_wall");
+    ResourceManager::LoadTexture("resources/textures/blue_brick_wall.jpg", GL_FALSE, "blue_brick_wall");
+    ResourceManager::LoadTexture("resources/textures/brick_wall.jpg", GL_FALSE, "brick_wall");
     ResourceManager::LoadTexture("resources/textures/container.png", GL_FALSE, "container");
     ResourceManager::LoadTexture("resources/textures/marble.PNG", GL_FALSE, "marble");
     ResourceManager::LoadTexture("resources/textures/black_marble.jpg", GL_FALSE, "black_marble");
@@ -41,6 +58,8 @@ void Game::Init()
     ResourceManager::LoadTexture("resources/textures/container_specular.png", GL_FALSE, "container_specular");
     ResourceManager::LoadTexture("resources/textures/tile_diffuse.jpg", GL_FALSE, "tile_diffuse");
     ResourceManager::LoadTexture("resources/textures/tile_specular.jpg", GL_FALSE, "tile_specular");
+
+
 
     _size = 10;
 
@@ -236,7 +255,7 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render(GLfloat dt)
 {
-    _level_renderer->draw(&_camera, _walls, _lights, _projectiles, _player, _floor, _colored_cubes);
+    _level_renderer->draw(&_camera, _walls, _lights, _projectiles, _player, _floor, _colored_cubes, skybox);
     _overlay_renderer->draw(_ammunition);
 }
 
