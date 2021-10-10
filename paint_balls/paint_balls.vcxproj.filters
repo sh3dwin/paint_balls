@@ -51,9 +51,6 @@
     <ClInclude Include="Floor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>

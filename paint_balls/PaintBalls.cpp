@@ -148,8 +148,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
     PaintBalls._camera.ProcessMouseMovement(xoffset, yoffset);
 
-    std::cout << "CAMERA: Pitch " << PaintBalls._camera.Pitch << std::endl;
-    std::cout << "CAMERA: Yaw " << PaintBalls._camera.Yaw << std::endl;
+    if (PaintBalls.debug) {
+        std::cout << "CAMERA: Pitch " << PaintBalls._camera.Pitch << std::endl;
+        std::cout << "CAMERA: Yaw " << PaintBalls._camera.Yaw << std::endl;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

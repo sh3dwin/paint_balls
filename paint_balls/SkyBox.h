@@ -10,6 +10,10 @@
 
 class SkyBox {
 public:
+    bool debug = false;
+    void Debug() {
+        this->debug = !debug;
+    }
     unsigned int _VAO;
 
     SkyBox() {

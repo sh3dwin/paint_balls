@@ -155,7 +155,6 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="SkyBox.h" />
-    <ClInclude Include="Sphere.cpp" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />

@@ -203,7 +203,8 @@ void Sphere::Draw(Camera* camera, std::vector<Light*> lights)  {
 
     glBindVertexArray(_VAO);
 
-    std::cout << "FLOOR: Rendering...\n";
+    if (debug)
+        std::cout << "FLOOR: Rendering...\n";
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 

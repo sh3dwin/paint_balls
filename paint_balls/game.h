@@ -34,6 +34,7 @@ enum GameState {
 class Game
 {
 public:
+    bool debug = false;
     std::vector<Wall*> _walls;
     std::vector<Light*> _lights;
     std::vector<Light*> _colored_cubes;
@@ -59,12 +60,13 @@ public:
     void Update(GLfloat dt);
     void Render(GLfloat dt);
     void generateLayout(unsigned int layout[], unsigned int size);
-    void addLight(glm::vec3 position, glm::vec3 color);
+    void addLight(glm::vec3 position, glm::vec3 color, unsigned int);
     void addPlayer();
-    void addColoredCube(glm::vec3 position, glm::vec3 color);
+    void addColoredCube(glm::vec3 position, glm::vec3 color, unsigned int);
     void Load(const GLchar* file, unsigned int size);
     void Fire();
 private:
+    void Debug();
     void doCollisions();
     void createProjectile();
     GLboolean CheckCollision(Projectile* projectile, Wall* wall);

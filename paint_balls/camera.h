@@ -31,6 +31,10 @@ const float ZOOM = 45.0f;
 class Camera
 {
 public:
+    bool debug = false;
+    void Debug() {
+        this->debug = !debug;
+    }
     // camera Attributes
     glm::vec3 Position;
     glm::vec3 Front;

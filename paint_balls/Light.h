@@ -11,8 +11,14 @@
 
 class Light {
 public:
-	Light(glm::vec3 position, glm::vec3 color, bool isLight) {
+	unsigned int id = 0;
+	bool debug = false;
+	void Debug() {
+		this->debug = !debug;
+	}
+	Light(glm::vec3 position, glm::vec3 color, bool isLight, unsigned int id) {
 		this->_isLight = isLight;
+		this->id = id;
 		this->_destroyed = false;
 		time_of_creation = glfwGetTime();
 		random = rand();
@@ -81,7 +87,7 @@ public:
 	}
 
 	void Draw(Camera* camera) {
-		if (_destroyed)
+		if (_destroyed && !_isLight)
 			return;
 		Shader* shader = ResourceManager::GetShader("light");
 		shader->Use();
@@ -112,7 +118,8 @@ public:
 	}
 
 	void Hit(glm::vec3 color) {
-		std::cout << "THE COLOR OF THE PROJECTILE ISSSS!!!! :::::: " << color.x << " " << color.y << " " << color.z << std::endl;
+		if(debug)
+			std::cout << "THE COLOR OF THE PROJECTILE ISSSS!!!! :::::: " << color.x << " " << color.y << " " << color.z << std::endl;
 		if (color.x > 0.0f && color.y > 0.0f && color.z > 0.0f)
 			return;
 		this->_color.x -= color.x;

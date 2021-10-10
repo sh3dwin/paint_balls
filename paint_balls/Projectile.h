@@ -13,6 +13,10 @@
 
 class Projectile {
 public:
+	bool debug = false;
+	void Debug() {
+		this->debug = !debug;
+	}
 	glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
 	glm::vec3 GREEN = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -85,7 +89,8 @@ public:
 	}
 
 	void Draw(Camera* camera, std::vector<Light*> lights) {
-		//std::cout << "PROJECTILE: DRAWING AT" << _position.x  << " " << _position.y  << " " << _position.z << "..." << std::endl;
+		if (debug)
+			std::cout << "PROJECTILE: DRAWING AT" << _position.x  << " " << _position.y  << " " << _position.z << "..." << std::endl;
 		this->_ball->Draw(camera, lights);
 	}
 private:

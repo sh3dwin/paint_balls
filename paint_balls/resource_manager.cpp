@@ -107,7 +107,7 @@ Shader* ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLc
 Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
 {
     // Create Texture object
-    std::cout << "OOGA::TEXTURE: Initializing\n";
+        std::cout << "OOGA::TEXTURE: Initializing\n";
 
     Texture2D* texture = new Texture2D();
     if (alpha)
@@ -119,7 +119,7 @@ Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean al
     int width, height;
     unsigned char* image = stbi_load(file, &width, &height, nullptr, texture->Image_Format == GL_RGBA ? 4 : 3);
     if (!image) {
-        std::cout << "ERROR::TEXTURE: Failed to load texture!" << std::endl;
+            std::cout << "ERROR::TEXTURE: Failed to load texture!" << std::endl;
     }
     else {
         std::cout << "TEXTURE: " << file << " loaded successfully..." << std::endl;

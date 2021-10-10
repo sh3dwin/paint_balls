@@ -19,6 +19,10 @@
 class Texture2D
 {
 public:
+    bool debug = true;
+    void Debug() {
+        this->debug = !debug;
+    }
     // Holds the ID of the texture object, used for all texture operations to reference to this particlar texture
     GLuint ID;
     // Texture image dimensions

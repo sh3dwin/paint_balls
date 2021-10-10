@@ -24,7 +24,8 @@ void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
     this->Width = width;
     this->Height = height;
     // Create Texture'
-    std::cout << "BOOGA::TEXTURE: GENERATING\n";
+    if (debug)
+        std::cout << "BOOGA::TEXTURE: GENERATING\n";
 
     glBindTexture(GL_TEXTURE_2D, this->ID);
     glTexImage2D(GL_TEXTURE_2D, 0, this->Internal_Format, width, height, 0, this->Image_Format, GL_UNSIGNED_BYTE, data);
